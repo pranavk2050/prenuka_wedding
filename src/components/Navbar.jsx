@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { NavLink } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Pencil, Lock, Menu, X, Download, Upload, RotateCcw } from 'lucide-react'
+import { Pencil, Lock, Menu, X, Download, RotateCcw } from 'lucide-react'
 import useWeddingStore from '../store/useWeddingStore'
 import SyncIndicator from './SyncIndicator'
 
@@ -17,7 +17,7 @@ const links = [
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false)
-  const { editMode, toggleEditMode, exportData, importData, resetToDefaults } = useWeddingStore()
+  const { editMode, toggleEditMode, exportData, resetToDefaults } = useWeddingStore()
 
   function handleReset() {
     if (window.confirm('Reset all data to defaults? This will clear guests, tasks, budget and restore the original schedule.')) {
@@ -34,23 +34,6 @@ export default function Navbar() {
     a.download = `pranav-renuka-wedding-${new Date().toISOString().slice(0, 10)}.json`
     a.click()
     URL.revokeObjectURL(url)
-  }
-
-  function handleImport() {
-    const input = document.createElement('input')
-    input.type = 'file'
-    input.accept = '.json'
-    input.onchange = e => {
-      const file = e.target.files[0]
-      if (!file) return
-      const reader = new FileReader()
-      reader.onload = ev => {
-        const ok = importData(ev.target.result)
-        if (!ok) alert('Invalid file format. Please use a valid exported JSON file.')
-      }
-      reader.readAsText(file)
-    }
-    input.click()
   }
 
   return (
@@ -117,17 +100,6 @@ export default function Navbar() {
             >
               <Download size={13} /> Export
             </button>
-            <button
-              onClick={handleImport}
-              title="Import Data"
-              className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-body transition-all duration-200"
-              style={{ color: 'rgba(184,168,138,0.7)', border: '1px solid rgba(201,151,47,0.15)' }}
-              onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(201,151,47,0.4)'; e.currentTarget.style.color = '#E8C97A' }}
-              onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(201,151,47,0.15)'; e.currentTarget.style.color = 'rgba(184,168,138,0.7)' }}
-            >
-              <Upload size={13} /> Import
-            </button>
-
             <button
               onClick={handleReset}
               title="Reset to default data"
@@ -214,10 +186,7 @@ export default function Navbar() {
               <hr className="divider my-2" />
               <div className="flex gap-2">
                 <button onClick={handleExport} className="flex-1 btn-ghost text-xs py-2 flex items-center justify-center gap-1">
-                  <Download size={12} /> Export
-                </button>
-                <button onClick={handleImport} className="flex-1 btn-ghost text-xs py-2 flex items-center justify-center gap-1">
-                  <Upload size={12} /> Import
+                  <Download size={12} /> Export Backup
                 </button>
               </div>
             </div>
