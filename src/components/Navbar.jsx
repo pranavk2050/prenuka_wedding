@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { NavLink } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Pencil, Lock, Menu, X, Download, RotateCcw } from 'lucide-react'
+import { Pencil, Lock, Menu, X, Download } from 'lucide-react'
 import useWeddingStore from '../store/useWeddingStore'
 import SyncIndicator from './SyncIndicator'
 
@@ -17,13 +17,7 @@ const links = [
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false)
-  const { editMode, toggleEditMode, exportData, resetToDefaults } = useWeddingStore()
-
-  function handleReset() {
-    if (window.confirm('Reset all data to defaults? This will clear guests, tasks, budget and restore the original schedule.')) {
-      resetToDefaults()
-    }
-  }
+  const { editMode, toggleEditMode, exportData } = useWeddingStore()
 
   function handleExport() {
     const json = exportData()
@@ -100,18 +94,7 @@ export default function Navbar() {
             >
               <Download size={13} /> Export
             </button>
-            <button
-              onClick={handleReset}
-              title="Reset to default data"
-              className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-body transition-all duration-200"
-              style={{ color: 'rgba(184,168,138,0.5)', border: '1px solid rgba(255,255,255,0.08)' }}
-              onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(239,68,68,0.3)'; e.currentTarget.style.color = '#fca5a5' }}
-              onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)'; e.currentTarget.style.color = 'rgba(184,168,138,0.5)' }}
-            >
-              <RotateCcw size={13} /> Reset
-            </button>
-
-            <SyncIndicator />
+<SyncIndicator />
 
             <button
               onClick={toggleEditMode}
