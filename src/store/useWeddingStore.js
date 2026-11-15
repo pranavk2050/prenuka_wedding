@@ -86,12 +86,21 @@ const useWeddingStore = create(
         set(s => ({ budget: { ...s.budget, totalBudget: amount } })),
 
       updateBudgetCategory: (id, patch) =>
-        set(s => ({
-          budget: {
-            ...s.budget,
-            categories: s.budget.categories.map(c => (c.id === id ? { ...c, ...patch } : c)),
-          },
-        })),
+        set(s => {
+          const cat = s.budget.categories.find(c => c.id === id)
+          const label = patch.name && patch.name !== cat?.name
+            ? `Renamed budget category "${cat?.name}" to "${patch.name}"`
+            : patch.spent !== undefined
+              ? `Updated spent for ${cat?.name ?? 'category'} to ₹${patch.spent}`
+              : `Updated ${cat?.name ?? 'category'} allocation to ₹${patch.allocated}`
+          return {
+            budget: {
+              ...s.budget,
+              categories: s.budget.categories.map(c => (c.id === id ? { ...c, ...patch } : c)),
+            },
+            activityLog: appendLog(s.activityLog, makeEntry(label)),
+          }
+        }),
 
       addBudgetCategory: category =>
         set(s => ({
@@ -99,15 +108,24 @@ const useWeddingStore = create(
             ...s.budget,
             categories: [...s.budget.categories, { ...category, id: crypto.randomUUID(), spent: 0 }],
           },
+          activityLog: appendLog(s.activityLog, makeEntry(
+            `Added budget category: ${category.name}`
+          )),
         })),
 
       deleteBudgetCategory: id =>
-        set(s => ({
-          budget: {
-            ...s.budget,
-            categories: s.budget.categories.filter(c => c.id !== id),
-          },
-        })),
+        set(s => {
+          const cat = s.budget.categories.find(c => c.id === id)
+          return {
+            budget: {
+              ...s.budget,
+              categories: s.budget.categories.filter(c => c.id !== id),
+            },
+            activityLog: appendLog(s.activityLog, makeEntry(
+              `Removed budget category: ${cat?.name ?? 'a category'}`
+            )),
+          }
+        }),
 
       // ─── Vendors ─────────────────────────────────────────────────────────────
       addVendor: vendor =>
