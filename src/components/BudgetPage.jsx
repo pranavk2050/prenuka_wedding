@@ -16,39 +16,58 @@ function fmtFull(n) {
 
 const COLORS = ['#C9972F','#E8C97A','#7E2787','#B85CC0','#2E8B57','#4682B4','#CD853F','#9370DB','#20B2AA','#D2691E','#6495ED','#BC8F8F','#3CB371']
 
-function EditableAmount({ value, onSave, style }) {
-  const [editing, setEditing] = useState(false)
-  const [val, setVal] = useState(value)
-
-  if (!editing) return (
-    <span
-      className="cursor-pointer hover:opacity-80 transition-opacity"
-      style={style}
-      onDoubleClick={() => { setVal(value); setEditing(true) }}
-      title="Double-click to edit"
-    >
-      {fmtFull(value)}
-    </span>
-  )
-  return (
-    <input
-      autoFocus
-      type="number"
-      className="input-dark w-28 text-right"
-      style={{ fontSize: 13, padding: '2px 6px' }}
-      value={val}
-      onChange={e => setVal(Number(e.target.value))}
-      onBlur={() => { onSave(Number(val)); setEditing(false) }}
-      onKeyDown={e => { if (e.key === 'Enter') { onSave(Number(val)); setEditing(false) } if (e.key === 'Escape') setEditing(false) }}
-    />
-  )
-}
 
 function CategoryRow({ cat, index, editMode, onUpdate, onDelete }) {
-  const [isOpen, setIsOpen] = useState(false)
+  const [editing, setEditing] = useState(false)
+  const [form, setForm]       = useState({ name: cat.name, allocated: cat.allocated, spent: cat.spent || 0 })
   const spent = cat.spent || 0
   const pct = cat.allocated ? Math.min(100, Math.round((spent / cat.allocated) * 100)) : 0
   const over = spent > cat.allocated
+
+  function saveEdit() {
+    onUpdate(cat.id, { name: form.name, allocated: Number(form.allocated), spent: Number(form.spent) })
+    setEditing(false)
+  }
+
+  if (editing) {
+    return (
+      <motion.div layout className="glass rounded-xl overflow-hidden">
+        <div className="px-5 py-4 space-y-3">
+          <div className="text-xs font-semibold font-body" style={{ color: '#E8C97A' }}>Edit Category</div>
+          <input
+            className="input-dark w-full"
+            placeholder="Category name"
+            value={form.name}
+            onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
+          />
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="text-xs font-body block mb-1" style={{ color: 'rgba(184,168,138,0.5)' }}>Allocated (₹)</label>
+              <input
+                type="number"
+                className="input-dark w-full"
+                value={form.allocated}
+                onChange={e => setForm(f => ({ ...f, allocated: e.target.value }))}
+              />
+            </div>
+            <div>
+              <label className="text-xs font-body block mb-1" style={{ color: 'rgba(184,168,138,0.5)' }}>Spent (₹)</label>
+              <input
+                type="number"
+                className="input-dark w-full"
+                value={form.spent}
+                onChange={e => setForm(f => ({ ...f, spent: e.target.value }))}
+              />
+            </div>
+          </div>
+          <div className="flex gap-2 justify-end">
+            <button onClick={() => setEditing(false)} className="btn-ghost text-xs py-1.5 px-3">Cancel</button>
+            <button onClick={saveEdit} className="btn-gold text-xs py-1.5 px-3">Save</button>
+          </div>
+        </div>
+      </motion.div>
+    )
+  }
 
   return (
     <motion.div
@@ -58,17 +77,14 @@ function CategoryRow({ cat, index, editMode, onUpdate, onDelete }) {
       transition={{ delay: index * 0.03 }}
       className="glass rounded-xl overflow-hidden"
     >
-      <div
-        className="flex items-center gap-4 px-5 py-4 cursor-pointer hover:bg-white/[0.02] transition-all"
-        onClick={() => setIsOpen(o => !o)}
-      >
+      <div className="flex items-center gap-4 px-5 py-4">
         {/* Color swatch */}
         <div
           className="w-2 h-8 rounded-full flex-shrink-0"
           style={{ background: COLORS[index % COLORS.length] }}
         />
 
-        {/* Name */}
+        {/* Name + progress */}
         <div className="flex-1 min-w-0">
           <span className="font-body text-sm font-medium text-cream block truncate">{cat.name}</span>
           <div className="mt-1.5 progress-track">
@@ -86,53 +102,42 @@ function CategoryRow({ cat, index, editMode, onUpdate, onDelete }) {
         <div className="flex items-center gap-6 flex-shrink-0">
           <div className="text-right hidden sm:block">
             <div className="font-body text-xs" style={{ color: 'rgba(184,168,138,0.5)' }}>Allocated</div>
-            {editMode ? (
-              <EditableAmount
-                value={cat.allocated}
-                onSave={v => onUpdate(cat.id, { allocated: v })}
-                style={{ fontSize: 13, fontFamily: 'Inter', fontVariantNumeric: 'tabular-nums', color: '#F5EDD6' }}
-              />
-            ) : (
-              <span className="text-sm font-body tab-nums text-cream">{fmtFull(cat.allocated)}</span>
-            )}
+            <span className="text-sm font-body tab-nums text-cream">{fmtFull(cat.allocated)}</span>
           </div>
           <div className="text-right">
             <div className="font-body text-xs" style={{ color: 'rgba(184,168,138,0.5)' }}>Spent</div>
-            {editMode ? (
-              <EditableAmount
-                value={spent}
-                onSave={v => onUpdate(cat.id, { spent: v })}
-                style={{ fontSize: 13, fontFamily: 'Inter', fontVariantNumeric: 'tabular-nums', color: over ? '#fca5a5' : '#86efac' }}
-              />
-            ) : (
-              <span className="text-sm font-body tab-nums" style={{ color: over ? '#fca5a5' : '#86efac' }}>{fmtFull(spent)}</span>
-            )}
+            <span className="text-sm font-body tab-nums" style={{ color: over ? '#fca5a5' : '#86efac' }}>{fmtFull(spent)}</span>
           </div>
           <div className="text-right hidden md:block">
             <div className="font-body text-xs" style={{ color: 'rgba(184,168,138,0.5)' }}>Remaining</div>
-            <span
-              className="text-sm font-body tab-nums"
-              style={{ color: over ? '#fca5a5' : 'rgba(184,168,138,0.7)' }}
-            >
+            <span className="text-sm font-body tab-nums" style={{ color: over ? '#fca5a5' : 'rgba(184,168,138,0.7)' }}>
               {over ? `-${fmtFull(spent - cat.allocated)}` : fmtFull(cat.allocated - spent)}
             </span>
           </div>
           <div className="w-10 text-right">
-            <span
-              className="text-sm font-semibold font-body tab-nums"
-              style={{ color: over ? '#fca5a5' : '#E8C97A' }}
-            >
+            <span className="text-sm font-semibold font-body tab-nums" style={{ color: over ? '#fca5a5' : '#E8C97A' }}>
               {pct}%
             </span>
           </div>
           {editMode && (
-            <button
-              onClick={e => { e.stopPropagation(); onDelete(cat.id) }}
-              className="p-1.5 rounded-lg hover:bg-red-900/20 transition-all"
-              style={{ color: 'rgba(184,168,138,0.4)' }}
-            >
-              <Trash2 size={12} />
-            </button>
+            <div className="flex items-center gap-1">
+              <button
+                onClick={() => { setForm({ name: cat.name, allocated: cat.allocated, spent: cat.spent || 0 }); setEditing(true) }}
+                className="p-1.5 rounded-lg hover:bg-gold/10 transition-all"
+                style={{ color: 'rgba(184,168,138,0.5)' }}
+                title="Edit category"
+              >
+                <Pencil size={12} />
+              </button>
+              <button
+                onClick={() => onDelete(cat.id)}
+                className="p-1.5 rounded-lg hover:bg-red-900/20 transition-all"
+                style={{ color: 'rgba(184,168,138,0.4)' }}
+                title="Delete category"
+              >
+                <Trash2 size={12} />
+              </button>
+            </div>
           )}
         </div>
       </div>
