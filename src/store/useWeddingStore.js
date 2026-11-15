@@ -88,17 +88,24 @@ const useWeddingStore = create(
       updateBudgetCategory: (id, patch) =>
         set(s => {
           const cat = s.budget.categories.find(c => c.id === id)
-          const label = patch.name && patch.name !== cat?.name
-            ? `Renamed budget category "${cat?.name}" to "${patch.name}"`
-            : patch.spent !== undefined
-              ? `Updated spent for ${cat?.name ?? 'category'} to ₹${patch.spent}`
-              : `Updated ${cat?.name ?? 'category'} allocation to ₹${patch.allocated}`
+          const changes = []
+          if (patch.name !== undefined && patch.name !== cat?.name)
+            changes.push(`renamed to "${patch.name}"`)
+          if (patch.allocated !== undefined && Number(patch.allocated) !== cat?.allocated)
+            changes.push(`budget updated ₹${cat?.allocated?.toLocaleString('en-IN')} → ₹${Number(patch.allocated).toLocaleString('en-IN')}`)
+          if (patch.spent !== undefined && Number(patch.spent) !== (cat?.spent || 0))
+            changes.push(`spent updated to ₹${Number(patch.spent).toLocaleString('en-IN')}`)
+          const label = changes.length
+            ? `${cat?.name ?? 'Category'}: ${changes.join(', ')}`
+            : null
           return {
             budget: {
               ...s.budget,
               categories: s.budget.categories.map(c => (c.id === id ? { ...c, ...patch } : c)),
             },
-            activityLog: appendLog(s.activityLog, makeEntry(label)),
+            activityLog: label
+              ? appendLog(s.activityLog, makeEntry(label))
+              : s.activityLog,
           }
         }),
 
