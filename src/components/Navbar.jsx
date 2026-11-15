@@ -1,9 +1,10 @@
 import { useState } from 'react'
 import { NavLink } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Pencil, Lock, Menu, X, Download } from 'lucide-react'
+import { Pencil, Lock, Menu, X, Download, FileText } from 'lucide-react'
 import useWeddingStore from '../store/useWeddingStore'
 import SyncIndicator from './SyncIndicator'
+import { exportFullPDF } from '../utils/exportPDF'
 
 const links = [
   { to: '/',         label: 'Dashboard' },
@@ -17,7 +18,8 @@ const links = [
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false)
-  const { editMode, toggleEditMode, exportData } = useWeddingStore()
+  const store = useWeddingStore()
+  const { editMode, toggleEditMode, exportData } = store
 
   function handleExport() {
     const json = exportData()
@@ -85,14 +87,24 @@ export default function Navbar() {
           {/* Right actions */}
           <div className="flex items-center gap-2">
             <button
-              onClick={handleExport}
-              title="Export Data"
+              onClick={() => exportFullPDF(store)}
+              title="Export PDF"
               className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-body transition-all duration-200"
               style={{ color: 'rgba(184,168,138,0.7)', border: '1px solid rgba(201,151,47,0.15)' }}
               onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(201,151,47,0.4)'; e.currentTarget.style.color = '#E8C97A' }}
               onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(201,151,47,0.15)'; e.currentTarget.style.color = 'rgba(184,168,138,0.7)' }}
             >
-              <Download size={13} /> Export
+              <FileText size={13} /> PDF
+            </button>
+            <button
+              onClick={handleExport}
+              title="Export JSON Backup"
+              className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-body transition-all duration-200"
+              style={{ color: 'rgba(184,168,138,0.7)', border: '1px solid rgba(201,151,47,0.15)' }}
+              onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(201,151,47,0.4)'; e.currentTarget.style.color = '#E8C97A' }}
+              onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(201,151,47,0.15)'; e.currentTarget.style.color = 'rgba(184,168,138,0.7)' }}
+            >
+              <Download size={13} /> Backup
             </button>
 <SyncIndicator />
 
@@ -168,8 +180,11 @@ export default function Navbar() {
               ))}
               <hr className="divider my-2" />
               <div className="flex gap-2">
+                <button onClick={() => exportFullPDF(store)} className="flex-1 btn-ghost text-xs py-2 flex items-center justify-center gap-1">
+                  <FileText size={12} /> PDF
+                </button>
                 <button onClick={handleExport} className="flex-1 btn-ghost text-xs py-2 flex items-center justify-center gap-1">
-                  <Download size={12} /> Export Backup
+                  <Download size={12} /> Backup
                 </button>
               </div>
             </div>
