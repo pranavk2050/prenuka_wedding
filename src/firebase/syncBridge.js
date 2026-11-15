@@ -24,6 +24,7 @@ async function writeToFirestore(state, deviceId) {
     vendors: state.vendors,
     schedule: state.schedule,
     venue: state.venue,
+    activityLog: state.activityLog ?? [],
     _deviceId: deviceId,
     _updatedAt: serverTimestamp(),
   }

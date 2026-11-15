@@ -9,6 +9,7 @@ import VendorsPage from './components/VendorsPage'
 import SchedulePage from './components/SchedulePage'
 import VenuePage from './components/VenuePage'
 import Footer from './components/Footer'
+import UserNameModal from './components/UserNameModal'
 
 function Layout({ children }) {
   return (
@@ -22,6 +23,8 @@ function Layout({ children }) {
 
 export default function App() {
   return (
+    <>
+    <UserNameModal />
     <Routes>
       <Route
         path="/"
@@ -39,5 +42,6 @@ export default function App() {
       <Route path="/schedule" element={<Layout><SchedulePage /></Layout>} />
       <Route path="/venue"    element={<Layout><VenuePage /></Layout>} />
     </Routes>
+    </>
   )
 }

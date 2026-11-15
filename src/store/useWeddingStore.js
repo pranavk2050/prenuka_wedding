@@ -1,11 +1,21 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { initialData } from '../data/initialData'
+import { getUserName } from '../hooks/useUserName'
+
+function makeEntry(message) {
+  return { id: crypto.randomUUID(), user: getUserName(), message, at: Date.now() }
+}
+
+function appendLog(log, entry) {
+  return [entry, ...log].slice(0, 50)
+}
 
 const useWeddingStore = create(
   persist(
     (set, get) => ({
       ...initialData,
+      activityLog: [],
       editMode: false,
 
       // ─── Edit mode ───────────────────────────────────────────────────────────
@@ -18,6 +28,9 @@ const useWeddingStore = create(
             ...s.guests,
             [side]: [...s.guests[side], { ...guest, id: crypto.randomUUID() }],
           },
+          activityLog: appendLog(s.activityLog, makeEntry(
+            `Added ${guest.name} to ${side === 'groomSide' ? "Pranav's" : "Renuka's"} guest list`
+          )),
         })),
 
       updateGuest: (side, id, patch) =>
@@ -29,12 +42,18 @@ const useWeddingStore = create(
         })),
 
       deleteGuest: (side, id) =>
-        set(s => ({
-          guests: {
-            ...s.guests,
-            [side]: s.guests[side].filter(g => g.id !== id),
-          },
-        })),
+        set(s => {
+          const guest = s.guests[side].find(g => g.id === id)
+          return {
+            guests: {
+              ...s.guests,
+              [side]: s.guests[side].filter(g => g.id !== id),
+            },
+            activityLog: appendLog(s.activityLog, makeEntry(
+              `Removed ${guest?.name ?? 'a guest'} from ${side === 'groomSide' ? "Pranav's" : "Renuka's"} guest list`
+            )),
+          }
+        }),
 
       // ─── Tasks ───────────────────────────────────────────────────────────────
       addTask: task =>
@@ -43,9 +62,16 @@ const useWeddingStore = create(
         })),
 
       toggleTask: id =>
-        set(s => ({
-          tasks: s.tasks.map(t => (t.id === id ? { ...t, completed: !t.completed } : t)),
-        })),
+        set(s => {
+          const task = s.tasks.find(t => t.id === id)
+          const nowDone = !task?.completed
+          return {
+            tasks: s.tasks.map(t => (t.id === id ? { ...t, completed: nowDone } : t)),
+            activityLog: appendLog(s.activityLog, makeEntry(
+              `${nowDone ? 'Completed' : 'Reopened'} task: ${task?.title ?? 'a task'}`
+            )),
+          }
+        }),
 
       updateTask: (id, patch) =>
         set(s => ({
@@ -85,10 +111,26 @@ const useWeddingStore = create(
 
       // ─── Vendors ─────────────────────────────────────────────────────────────
       addVendor: vendor =>
-        set(s => ({ vendors: [...s.vendors, { ...vendor, id: crypto.randomUUID() }] })),
+        set(s => ({
+          vendors: [...s.vendors, { ...vendor, id: crypto.randomUUID() }],
+          activityLog: appendLog(s.activityLog, makeEntry(
+            `Added vendor: ${vendor.name} (${vendor.category})`
+          )),
+        })),
 
       updateVendor: (id, patch) =>
-        set(s => ({ vendors: s.vendors.map(v => (v.id === id ? { ...v, ...patch } : v)) })),
+        set(s => {
+          const vendor = s.vendors.find(v => v.id === id)
+          const statusChanged = patch.status && patch.status !== vendor?.status
+          return {
+            vendors: s.vendors.map(v => (v.id === id ? { ...v, ...patch } : v)),
+            activityLog: statusChanged
+              ? appendLog(s.activityLog, makeEntry(
+                  `Updated ${vendor?.name ?? 'vendor'} status to ${patch.status.replace('_', ' ')}`
+                ))
+              : s.activityLog,
+          }
+        }),
 
       deleteVendor: id =>
         set(s => ({ vendors: s.vendors.filter(v => v.id !== id) })),
@@ -160,12 +202,13 @@ const useWeddingStore = create(
       // ─── Firebase sync ───────────────────────────────────────────────────────
       setRemoteData: data =>
         set({
-          guests:   data.guests   ?? undefined,
-          tasks:    data.tasks    ?? undefined,
-          budget:   data.budget   ?? undefined,
-          vendors:  data.vendors  ?? undefined,
-          schedule: data.schedule ?? undefined,
-          venue:    data.venue    ?? undefined,
+          guests:      data.guests      ?? undefined,
+          tasks:       data.tasks       ?? undefined,
+          budget:      data.budget      ?? undefined,
+          vendors:     data.vendors     ?? undefined,
+          schedule:    data.schedule    ?? undefined,
+          venue:       data.venue       ?? undefined,
+          activityLog: data.activityLog ?? undefined,
         }),
     }),
     {
@@ -178,6 +221,7 @@ const useWeddingStore = create(
         vendors: state.vendors,
         schedule: state.schedule,
         venue: state.venue,
+        activityLog: state.activityLog,
       }),
     }
   )

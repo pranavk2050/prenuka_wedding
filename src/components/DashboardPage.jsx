@@ -1,5 +1,16 @@
 import { motion } from 'framer-motion'
 import { Users, CheckSquare, IndianRupee, CalendarDays } from 'lucide-react'
+
+function timeAgo(ts) {
+  const diff = Date.now() - ts
+  const m = Math.floor(diff / 60000)
+  const h = Math.floor(diff / 3600000)
+  const d = Math.floor(diff / 86400000)
+  if (m < 1) return 'just now'
+  if (m < 60) return `${m}m ago`
+  if (h < 24) return `${h}h ago`
+  return `${d}d ago`
+}
 import {
   PieChart, Pie, Cell, Tooltip, ResponsiveContainer,
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Legend,
@@ -57,7 +68,7 @@ function fmt(n) {
 }
 
 export default function DashboardPage() {
-  const { guests, tasks, budget } = useWeddingStore()
+  const { guests, tasks, budget, activityLog } = useWeddingStore()
 
   const groomCount = guests.groomSide.length
   const brideCount = guests.brideSide.length
@@ -236,10 +247,51 @@ export default function DashboardPage() {
         </motion.div>
       </div>
 
-      {/* Task progress */}
-      <motion.div {...fadeUp(0)} className="glass rounded-2xl p-6">
-        <div className="section-eyebrow mb-1">Tasks</div>
-        <h3 className="font-display text-xl font-semibold text-cream mb-6">Progress by Category</h3>
+      {/* Activity feed + Task progress */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-10">
+        {/* Activity log */}
+        <motion.div {...fadeUp(0)} className="glass rounded-2xl p-6">
+          <div className="section-eyebrow mb-1">Activity</div>
+          <h3 className="font-display text-xl font-semibold text-cream mb-6">Recent Changes</h3>
+          {activityLog.length === 0 ? (
+            <p className="text-sm font-body text-center py-8" style={{ color: 'rgba(184,168,138,0.4)' }}>
+              No activity yet — start editing to see changes here
+            </p>
+          ) : (
+            <div className="space-y-3 max-h-72 overflow-y-auto pr-1">
+              {activityLog.slice(0, 15).map(entry => (
+                <div key={entry.id} className="flex items-start gap-3">
+                  <div
+                    className="w-7 h-7 rounded-full flex-shrink-0 flex items-center justify-center text-xs font-bold font-body mt-0.5"
+                    style={
+                      entry.user === 'Pranav'
+                        ? { background: 'rgba(201,151,47,0.15)', color: '#E8C97A', border: '1px solid rgba(201,151,47,0.3)' }
+                        : { background: 'rgba(126,39,135,0.15)', color: '#B85CC0', border: '1px solid rgba(126,39,135,0.3)' }
+                    }
+                  >
+                    {entry.user?.[0] ?? '?'}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs font-body leading-relaxed" style={{ color: 'rgba(245,237,214,0.85)' }}>
+                      <span className="font-semibold" style={{ color: entry.user === 'Pranav' ? '#E8C97A' : '#B85CC0' }}>
+                        {entry.user}
+                      </span>{' '}
+                      {entry.message}
+                    </p>
+                    <p className="text-xs font-body mt-0.5" style={{ color: 'rgba(184,168,138,0.4)' }}>
+                      {timeAgo(entry.at)}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </motion.div>
+
+        {/* Task progress */}
+        <motion.div {...fadeUp(1)} className="glass rounded-2xl p-6">
+          <div className="section-eyebrow mb-1">Tasks</div>
+          <h3 className="font-display text-xl font-semibold text-cream mb-6">Progress by Category</h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {taskCategories.map(cat => {
             const catTasks = tasks.filter(t => t.category === cat)
@@ -266,7 +318,8 @@ export default function DashboardPage() {
             )
           })}
         </div>
-      </motion.div>
+        </motion.div>
+      </div>
     </section>
   )
 }
