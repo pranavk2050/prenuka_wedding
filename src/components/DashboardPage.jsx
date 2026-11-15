@@ -68,7 +68,7 @@ function fmt(n) {
 }
 
 export default function DashboardPage() {
-  const { guests, tasks, budget, activityLog } = useWeddingStore()
+  const { guests, tasks, budget, activityLog = [] } = useWeddingStore()
 
   const groomCount = guests.groomSide.length
   const brideCount = guests.brideSide.length

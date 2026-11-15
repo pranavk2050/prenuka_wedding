@@ -208,7 +208,7 @@ const useWeddingStore = create(
           vendors:     data.vendors     ?? undefined,
           schedule:    data.schedule    ?? undefined,
           venue:       data.venue       ?? undefined,
-          activityLog: data.activityLog ?? undefined,
+          activityLog: data.activityLog ?? [],
         }),
     }),
     {
