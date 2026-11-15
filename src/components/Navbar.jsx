@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Pencil, Lock, Menu, X, Download, FileText } from 'lucide-react'
 import useWeddingStore from '../store/useWeddingStore'
 import SyncIndicator from './SyncIndicator'
+import OnlineIndicator from './OnlineIndicator'
 import { exportFullPDF } from '../utils/exportPDF'
 
 const links = [
@@ -86,6 +87,7 @@ export default function Navbar() {
 
           {/* Right actions */}
           <div className="flex items-center gap-2">
+            <OnlineIndicator />
             <button
               onClick={() => exportFullPDF(store)}
               title="Export PDF"

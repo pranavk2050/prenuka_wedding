@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion'
 import { Users, CheckSquare, IndianRupee, CalendarDays } from 'lucide-react'
+import { usePresence } from '../context/PresenceContext'
 
 function timeAgo(ts) {
   const diff = Date.now() - ts
@@ -69,6 +70,7 @@ function fmt(n) {
 
 export default function DashboardPage() {
   const { guests, tasks, budget, activityLog = [] } = useWeddingStore()
+  const { onlineUsers, visitLog } = usePresence()
 
   const groomCount = guests.groomSide.length
   const brideCount = guests.brideSide.length
@@ -177,6 +179,73 @@ export default function DashboardPage() {
           </div>
         </motion.div>
       </div>
+
+      {/* Online + Visit log */}
+      <motion.div {...fadeUp(0)} className="glass rounded-2xl p-6 mb-6">
+        <div className="flex flex-col sm:flex-row sm:items-start gap-6">
+          {/* Who's online */}
+          <div className="flex-shrink-0">
+            <div className="section-eyebrow mb-3">Now Online</div>
+            <div className="flex items-center gap-4">
+              {[
+                { name: 'Pranav', color: '#E8C97A', bg: 'rgba(201,151,47,0.15)', border: 'rgba(201,151,47,0.3)' },
+                { name: 'Renuka', color: '#B85CC0', bg: 'rgba(126,39,135,0.15)', border: 'rgba(126,39,135,0.3)' },
+              ].map(u => {
+                const online = onlineUsers.includes(u.name)
+                return (
+                  <div key={u.name} className="flex items-center gap-2">
+                    <div
+                      className="relative w-9 h-9 rounded-full flex items-center justify-center font-bold font-body text-sm"
+                      style={{ background: u.bg, border: `1px solid ${u.border}`, color: u.color }}
+                    >
+                      {u.name[0]}
+                      <span
+                        className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2"
+                        style={{ background: online ? '#86efac' : 'rgba(255,255,255,0.12)', borderColor: '#0C0919', boxShadow: online ? '0 0 8px #86efac99' : 'none' }}
+                      />
+                    </div>
+                    <div>
+                      <div className="text-sm font-medium font-body" style={{ color: u.color }}>{u.name}</div>
+                      <div className="text-xs font-body" style={{ color: online ? '#86efac' : 'rgba(184,168,138,0.4)' }}>
+                        {online ? 'Online' : 'Offline'}
+                      </div>
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+
+          {/* Divider */}
+          <div className="hidden sm:block w-px self-stretch" style={{ background: 'rgba(201,151,47,0.15)' }} />
+
+          {/* Visit log */}
+          <div className="flex-1 min-w-0">
+            <div className="section-eyebrow mb-3">Visit History</div>
+            {visitLog.length === 0 ? (
+              <p className="text-xs font-body" style={{ color: 'rgba(184,168,138,0.35)' }}>No visits recorded yet</p>
+            ) : (
+              <div className="flex flex-wrap gap-2">
+                {visitLog.slice(0, 20).map((v, i) => (
+                  <div
+                    key={i}
+                    className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-body"
+                    style={
+                      v.user === 'Pranav'
+                        ? { background: 'rgba(201,151,47,0.1)', border: '1px solid rgba(201,151,47,0.2)', color: '#E8C97A' }
+                        : { background: 'rgba(126,39,135,0.1)', border: '1px solid rgba(126,39,135,0.2)', color: '#B85CC0' }
+                    }
+                  >
+                    <span className="font-semibold">{v.user}</span>
+                    <span style={{ color: 'rgba(184,168,138,0.5)' }}>·</span>
+                    <span style={{ color: 'rgba(184,168,138,0.55)' }}>{timeAgo(v.at)}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      </motion.div>
 
       {/* Charts row */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-10">

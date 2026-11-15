@@ -10,6 +10,7 @@ import SchedulePage from './components/SchedulePage'
 import VenuePage from './components/VenuePage'
 import Footer from './components/Footer'
 import UserNameModal from './components/UserNameModal'
+import { PresenceProvider } from './context/PresenceContext'
 
 function Layout({ children }) {
   return (
@@ -25,6 +26,7 @@ export default function App() {
   return (
     <>
     <UserNameModal />
+    <PresenceProvider>
     <Routes>
       <Route
         path="/"
@@ -42,6 +44,7 @@ export default function App() {
       <Route path="/schedule" element={<Layout><SchedulePage /></Layout>} />
       <Route path="/venue"    element={<Layout><VenuePage /></Layout>} />
     </Routes>
+    </PresenceProvider>
     </>
   )
 }
