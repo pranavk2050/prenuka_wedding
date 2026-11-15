@@ -156,6 +156,17 @@ const useWeddingStore = create(
       },
 
       resetToDefaults: () => set({ ...initialData }),
+
+      // ─── Firebase sync ───────────────────────────────────────────────────────
+      setRemoteData: data =>
+        set({
+          guests:   data.guests   ?? undefined,
+          tasks:    data.tasks    ?? undefined,
+          budget:   data.budget   ?? undefined,
+          vendors:  data.vendors  ?? undefined,
+          schedule: data.schedule ?? undefined,
+          venue:    data.venue    ?? undefined,
+        }),
     }),
     {
       name: 'prenuka_wedding_data',

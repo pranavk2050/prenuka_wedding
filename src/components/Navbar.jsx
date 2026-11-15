@@ -3,6 +3,7 @@ import { NavLink } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Pencil, Lock, Menu, X, Download, Upload, RotateCcw } from 'lucide-react'
 import useWeddingStore from '../store/useWeddingStore'
+import SyncIndicator from './SyncIndicator'
 
 const links = [
   { to: '/',         label: 'Dashboard' },
@@ -138,6 +139,8 @@ export default function Navbar() {
               <RotateCcw size={13} /> Reset
             </button>
 
+            <SyncIndicator />
+
             <button
               onClick={toggleEditMode}
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium font-body transition-all duration-200"
@@ -176,7 +179,7 @@ export default function Navbar() {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 py-1.5 flex items-center gap-2">
               <div className="w-1.5 h-1.5 rounded-full bg-gold-light animate-pulse" />
               <span className="text-xs font-body" style={{ color: '#E8C97A' }}>
-                Edit mode is active — changes are saved automatically to your browser
+                Edit mode is active — changes are saved automatically and synced across devices
               </span>
             </div>
           </motion.div>
