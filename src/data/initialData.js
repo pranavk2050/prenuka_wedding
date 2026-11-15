@@ -107,13 +107,13 @@ export const initialData = {
 
   schedule: {
     feb11: [
-      { id: 's11_1', time: '09:00', title: 'Arrival & Check-in',           subtitle: '',               duration: 60,  location: 'Coco Resort Lobby',   description: 'Guests arrive, check in to their rooms. Welcome drinks at the lobby.' },
-      { id: 's11_2', time: '10:00', title: 'Srimant Pujan',                subtitle: 'श्रीमंत पूजन',   duration: 120, location: 'Main Mandap, Resort', description: 'Pre-wedding puja ceremony performed by the Guruji. Close family members attend. Pranav & Renuka receive blessings.' },
-      { id: 's11_3', time: '12:30', title: 'Lunch',                        subtitle: 'दुपारचे जेवण',   duration: 90,  location: 'Dining Hall',          description: 'Lunch for all 100 stay guests. Traditional Maharashtrian thali.' },
-      { id: 's11_4', time: '15:30', title: 'Haladi Ceremony – Renuka',     subtitle: 'हळद — रेणुका',   duration: 60,  location: 'Renuka\'s Suite',      description: 'Turmeric (haldi) ceremony for the bride with family women.' },
-      { id: 's11_5', time: '17:00', title: 'Haladi Ceremony – Pranav',     subtitle: 'हळद — प्रणव',    duration: 60,  location: 'Pranav\'s Suite',      description: 'Turmeric (haldi) ceremony for the groom with family.' },
-      { id: 's11_6', time: '19:30', title: 'Sangeet & Dinner',             subtitle: 'संगीत सोहळा',    duration: 180, location: 'Garden / Lawn Area',   description: 'Evening sangeet with music, dance performances by family. Dinner buffet for all stay guests.' },
-      { id: 's11_7', time: '22:30', title: 'Wind Down',                    subtitle: '',               duration: 0,   location: 'Resort',               description: 'Evening concludes. Guests retire to rooms for rest before the big day.' },
+      { id: 's11_1', time: '14:00', title: 'Arrival & Check-in',           subtitle: '',               duration: 120, location: 'Coco Resort Lobby',   description: 'Guests arrive between 2–4 PM and check in to their rooms. Welcome drinks and refreshments at the lobby.' },
+      { id: 's11_2', time: '16:30', title: 'Haladi Ceremony – Renuka',     subtitle: 'हळद — रेणुका',   duration: 60,  location: 'Renuka\'s Suite',      description: 'Turmeric (haldi) ceremony for the bride with family women. Private family event.' },
+      { id: 's11_3', time: '17:30', title: 'Haladi Ceremony – Pranav',     subtitle: 'हळद — प्रणव',    duration: 60,  location: 'Pranav\'s Suite',      description: 'Turmeric (haldi) ceremony for the groom with family elders.' },
+      { id: 's11_4', time: '19:00', title: 'Srimant Pujan',                subtitle: 'श्रीमंत पूजन',   duration: 90,  location: 'Main Mandap, Resort', description: 'Evening pre-wedding puja ceremony presided by the Guruji. All stay guests attend. Pranav & Renuka receive blessings from both families. Marks the auspicious start of the wedding celebrations.' },
+      { id: 's11_5', time: '20:30', title: 'Dinner',                       subtitle: 'रात्रीचे जेवण',  duration: 90,  location: 'Dining Hall / Lawn',   description: 'Dinner for all 100 stay guests following the Srimant Pujan. Traditional Maharashtrian Deshasth menu.' },
+      { id: 's11_6', time: '22:00', title: 'Sangeet & Celebrations',       subtitle: 'संगीत सोहळा',    duration: 60,  location: 'Garden / Lawn Area',   description: 'Light music and celebrations after dinner. Family performances and dancing to welcome the wedding day.' },
+      { id: 's11_7', time: '23:00', title: 'Wind Down',                    subtitle: '',               duration: 0,   location: 'Resort',               description: 'Evening concludes. Guests retire to rooms for rest before the big day.' },
     ],
     feb12: [
       { id: 's12_1', time: '06:30', title: 'Brahma Muhurta – Morning Puja', subtitle: 'ब्राह्ममुहूर्त', duration: 30,  location: 'Respective Suites',    description: 'Early morning prayers. Bride and groom families perform morning rituals separately.' },
@@ -136,7 +136,7 @@ export const initialData = {
     email: 'events@cocoresortpune.com',
     website: '',
     contactPerson: 'Events Manager',
-    checkIn: 'Feb 11, 2027 – 9:00 AM',
+    checkIn: 'Feb 11, 2027 – 2:00 PM',
     checkOut: 'Feb 13, 2027 – 11:00 AM',
     stayRooms: 100,
     eventCapacity: 500,
